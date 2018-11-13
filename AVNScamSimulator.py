@@ -2,6 +2,7 @@ import threading
 import time
 import random
 import katpoint
+import numpy as np
 from katcp import DeviceServer, Sensor, ProtocolFlags
 
 
@@ -45,12 +46,18 @@ class ScamSimulator(DeviceServer):
 
 
     def sensor_value_thread_function(self):
+
+        antenna_str = "ant1, 5:45:2.48, -0:18:17.92, 116, 32.0, 0 0 0, %s" % ("0 " * 23)
+        antenna = katpoint.Antenna(antenna_str)
+        my_target = katpoint.Target("name1 | *name 2, radec, 12:34:56.7, -04:34:34.2, (1000.0 2000.0 1.0)")
+        my_target.antenna = antenna
+
         while True:
-            random_az_val = random.random()*360
-            self._SCM_request_azim.set_value(random_az_val)
+            target_azel = my_target.azel()
+            self._SCM_request_azim.set_value(np.degrees(target_azel[0]))
+            self._SCM_request_elev.set_value(np.degrees(target_azel[1]))
 
-            time.sleep(1)
-
+            time.sleep(random.random()*4 + 1)
 
 if __name__ == "__main__":
     server = ScamSimulator("localhost", 1235)
