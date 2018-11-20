@@ -109,6 +109,10 @@ class ScamSimulator(DeviceServer):
         self._SCM_pmodel30 = Sensor.float("SCM.pmodel30", "Pointing model parameter 30")
         self.add_sensor(self._SCM_pmodel30)
 
+        # Target
+        self._SCM_Target = Sensor.string("SCM.Target", "Target description string in katpoint format")
+        self.add_sensor(self._SCM_Target)
+
         self.animation_thread = threading.Thread(target=self.sensor_value_thread_function)
         self.animation_thread.start()
 
@@ -121,7 +125,37 @@ class ScamSimulator(DeviceServer):
                               antenna=antenna)
 
         self._SCM_pmodel1.set_value(random.random())
-        
+        self._SCM_pmodel2.set_value(random.random())
+        self._SCM_pmodel3.set_value(random.random())
+        self._SCM_pmodel4.set_value(random.random())
+        self._SCM_pmodel5.set_value(random.random())
+        self._SCM_pmodel6.set_value(random.random())
+        self._SCM_pmodel7.set_value(random.random())
+        self._SCM_pmodel8.set_value(random.random())
+        self._SCM_pmodel9.set_value(random.random())
+        self._SCM_pmodel10.set_value(random.random())
+        self._SCM_pmodel11.set_value(random.random())
+        self._SCM_pmodel12.set_value(random.random())
+        self._SCM_pmodel13.set_value(random.random())
+        self._SCM_pmodel14.set_value(random.random())
+        self._SCM_pmodel15.set_value(random.random())
+        self._SCM_pmodel16.set_value(random.random())
+        self._SCM_pmodel17.set_value(random.random())
+        self._SCM_pmodel18.set_value(random.random())
+        self._SCM_pmodel19.set_value(random.random())
+        self._SCM_pmodel20.set_value(random.random())
+        self._SCM_pmodel21.set_value(random.random())
+        self._SCM_pmodel22.set_value(random.random())
+        self._SCM_pmodel23.set_value(random.random())
+        self._SCM_pmodel24.set_value(random.random())
+        self._SCM_pmodel25.set_value(random.random())
+        self._SCM_pmodel26.set_value(random.random())
+        self._SCM_pmodel27.set_value(random.random())
+        self._SCM_pmodel28.set_value(random.random())
+        self._SCM_pmodel29.set_value(random.random())
+        self._SCM_pmodel30.set_value(random.random())
+
+        self._SCM_Target.set_value(my_target.description)
 
         import IPython; IPython.embed()
 
@@ -129,6 +163,10 @@ class ScamSimulator(DeviceServer):
             target_azel = my_target.azel()
             self._SCM_request_azim.set_value(np.degrees(target_azel[0]))
             self._SCM_request_elev.set_value(np.degrees(target_azel[1]))
+            self._SCM_desired_azim.set_value(np.trunc(10*self._SCM_request_azim.value())/10)
+            self._SCM_desired_elev.set_value(np.trunc(10*self._SCM_request_elev.value())/10)
+            self._SCM_actual_azim.set_value(self._SCM_desired_azim.value() + random.random()/25)
+            self._SCM_actual_elev.set_value(self._SCM_desired_elev.value() + random.random()/25)
 
             time.sleep(random.random()*4 + 1)
 
