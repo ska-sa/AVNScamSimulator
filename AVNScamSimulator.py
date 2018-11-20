@@ -6,6 +6,14 @@ import numpy as np
 from katcp import DeviceServer, Sensor, ProtocolFlags
 
 
+class AVNTarget(katpoint.Target):
+    def is_visible(self):
+        if self.azel()[0] >= 0.15:  # Somewhat arbitrarily, this is about 8.5 degrees
+            return True
+        else:
+            return False
+
+
 class ScamSimulator(DeviceServer):
 
     VERSION_INFO = ("scam-simulator-version", 1, 0)
@@ -49,8 +57,8 @@ class ScamSimulator(DeviceServer):
 
         antenna_str = "ant1, 5:45:2.48, -0:18:17.92, 116, 32.0, 0 0 0, %s" % ("0 " * 23)
         antenna = katpoint.Antenna(antenna_str)
-        my_target = katpoint.Target("name1 | *name 2, radec, 12:34:56.7, -04:34:34.2, (1000.0 2000.0 1.0)")
-        my_target.antenna = antenna
+        my_target = AVNTarget("name1 | *name 2, radec, 12:34:56.7, -04:34:34.2, (1000.0 2000.0 1.0)",
+                              antenna=antenna)
 
         import IPython; IPython.embed()
 
