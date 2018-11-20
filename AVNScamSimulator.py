@@ -52,6 +52,8 @@ class ScamSimulator(DeviceServer):
         my_target = katpoint.Target("name1 | *name 2, radec, 12:34:56.7, -04:34:34.2, (1000.0 2000.0 1.0)")
         my_target.antenna = antenna
 
+        import IPython; IPython.embed()
+
         while True:
             target_azel = my_target.azel()
             self._SCM_request_azim.set_value(np.degrees(target_azel[0]))
