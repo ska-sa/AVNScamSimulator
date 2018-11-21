@@ -22,9 +22,9 @@ class ScamSimulator(DeviceServer):
     # Optionally set the KATCP protocol version and features. Defaults to
     # the latest implemented version of KATCP, with all supported optional
     # features
-    PROTOCOL_INFO = ProtocolFlags(5, 0, set([
+    PROTOCOL_INFO = ProtocolFlags(4, 0, set([
         ProtocolFlags.MULTI_CLIENT,
-        ProtocolFlags.MESSAGE_IDS,
+        #ProtocolFlags.MESSAGE_IDS,
     ]))
 
     def setup_sensors(self):
