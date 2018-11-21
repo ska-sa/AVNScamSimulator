@@ -184,7 +184,7 @@ class ScamSimulator(DeviceServer):
             self._SCM_actual_azim.set_value(self._SCM_desired_azim.value() + random.random()/25)
             self._SCM_actual_elev.set_value(self._SCM_desired_elev.value() + random.random()/25)
 
-            attenuation = float(random.randint())/2
+            attenuation = float(random.randint(0, 63))/2
             self._SCM_LcpAttenuation.set_value(attenuation)
             self._SCM_RcpAttenuation.set_value(attenuation)
 
@@ -197,7 +197,6 @@ class ScamSimulator(DeviceServer):
                 self._RFC_IntermediateStage_5GHz.set_value(50e6*random.random() + 1.5e9)
                 self._RFC_IntermediateStage_6_7GHz.set_value(50e6*random.random() + 3.2e9)
                 self._RFC_FinalStage.set_value(50e6*random.random() + 2.85e9)
-
 
             time.sleep(random.random()*4 + 1)
 
