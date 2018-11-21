@@ -235,9 +235,9 @@ class ScamSimulator(DeviceServer):
                 WindSpeed += random.random() - 0.5
                 self._EMS_WindSpeed.set_value(WindSpeed)
                 AirTemperature += 0.5*random.random() - 0.25
-                self._EMS_AirTemperature(AirTemperature)
+                self._EMS_AirTemperature.set_value(AirTemperature)
                 AbsolutePressure += 0.1*random.random() - 0.05
-                self._EMS_AbsolutePressure(AbsolutePressure)
+                self._EMS_AbsolutePressure.set_value(AbsolutePressure)
                 RelativeHumidity += 0.1*random.random() - 0.05
 
             time.sleep(random.random()*4 + 1)
