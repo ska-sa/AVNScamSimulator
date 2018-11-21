@@ -129,6 +129,10 @@ class ScamSimulator(DeviceServer):
         self._RFC_FinalStage = Sensor.float("RFC.FinalStage", "Final Stage LO frequency")
         self.add_sensor(self._RFC_FinalStage)
 
+        # Noise diode sensor information
+        self._RFC_NoiseDiode_1 = Sensor.integer("RFC.NoiseDiode_1", "All noise diode data (bitfield)")
+        self.add_sensor(self._RFC_NoiseDiode_1)
+
         self.animation_thread = threading.Thread(target=self.sensor_value_thread_function)
         self.animation_thread.start()
 
@@ -188,15 +192,28 @@ class ScamSimulator(DeviceServer):
             self._SCM_LcpAttenuation.set_value(attenuation)
             self._SCM_RcpAttenuation.set_value(attenuation)
 
-            freq_sel = bool(random.randint(0, 1))
-            self._RFC_LcpFreqSel.set_value(freq_sel)
-            self._RFC_RcpFreqSel.set_value(freq_sel)
-
             # Frequency band doesn't need to be changed as frequently as the other stuff.
             if random.random() > 0.925:
+                freq_sel = bool(random.randint(0, 1))
+                self._RFC_LcpFreqSel.set_value(freq_sel)
+                self._RFC_RcpFreqSel.set_value(freq_sel)
                 self._RFC_IntermediateStage_5GHz.set_value(50e6*random.random() + 1.5e9)
                 self._RFC_IntermediateStage_6_7GHz.set_value(50e6*random.random() + 3.2e9)
                 self._RFC_FinalStage.set_value(50e6*random.random() + 2.85e9)
+
+            # Noise diode info also doesn't need to change every tick.
+            if random.random() > 0.6:
+                input_source = random.randint(0, 3)
+                bit_2 = 0
+                enable = random.randint(0, 1)
+                noise_diode_select = random.randint(1, 15)  # Not actually sure if this is supposed to be one-hot
+                pwm_mark = random.randint(0, 63)
+                freq_sel = random.randint(0, 3)
+                bitfield = input_source + bit_2*2**2 + enable*2**3 + noise_diode_select*2**4 + pwm_mark*2**8\
+                           + freq_sel*2**14
+                self._RFC_NoiseDiode_1.set_value(bitfield)
+
+            
 
             time.sleep(random.random()*4 + 1)
 
