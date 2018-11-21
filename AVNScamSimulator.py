@@ -133,6 +133,18 @@ class ScamSimulator(DeviceServer):
         self._RFC_NoiseDiode_1 = Sensor.integer("RFC.NoiseDiode_1", "All noise diode data (bitfield)")
         self.add_sensor(self._RFC_NoiseDiode_1)
 
+        # EMS information
+        self._EMS_WindDirection = Sensor.float("EMS.WindDirection", "Wind direction")
+        self.add_sensor(self._EMS_WindDirection)
+        self._EMS_WindSpeed = Sensor.float("EMS.WindSpeed", "Wind speed")
+        self.add_sensor(self._EMS_WindSpeed)
+        self._EMS_AirTemperature = Sensor.float("EMS.AirTemperature", "Air temperature")
+        self.add_sensor(self._EMS_AirTemperature)
+        self._EMS_AbsolutePressure = Sensor.float("EMS.AbsolutePressure", "Air pressure")
+        self.add_sensor(self._EMS_AbsolutePressure)
+        self._EMS_RelativeHumidity = Sensor.float("EMS.RelativeHumidity", "Ambient relative humidity")
+        self.add_sensor(self._EMS_RelativeHumidity)
+
         self.animation_thread = threading.Thread(target=self.sensor_value_thread_function)
         self.animation_thread.start()
 
@@ -175,9 +187,12 @@ class ScamSimulator(DeviceServer):
         self._SCM_pmodel29.set_value(random.random())
         self._SCM_pmodel30.set_value(random.random())
 
-        # self._SCM_Target.set_value(my_target.description)
-
-        #import IPython; IPython.embed()
+        # There shouldn't be step-changes in the environment data, so set initial values.
+        WindDirection = 360*random.random()
+        WindSpeed = 50*random.random()
+        AirTemperature = 50*random.random()
+        AbsolutePressure = 10*random.random() + 1010.0
+        RelativeHumidity = 100*random.random()
 
         while True:
             target_azel = my_target.azel()
@@ -213,9 +228,20 @@ class ScamSimulator(DeviceServer):
                            + freq_sel*2**14
                 self._RFC_NoiseDiode_1.set_value(bitfield)
 
-            
+            # Climate information only needs to change occasionally too
+            if random.random() > 0.35:
+                WindDirection += 2*random.random() - 1
+                self._EMS_WindDirection.set_value(WindDirection)
+                WindSpeed += random.random() - 0.5
+                self._EMS_WindSpeed.set_value(WindSpeed)
+                AirTemperature += 0.5*random.random() - 0.25
+                self._EMS_AirTemperature(AirTemperature)
+                AbsolutePressure += 0.1*random.random() - 0.05
+                self._EMS_AbsolutePressure(AbsolutePressure)
+                RelativeHumidity += 0.1*random.random() - 0.05
 
             time.sleep(random.random()*4 + 1)
+
 
 if __name__ == "__main__":
     server = ScamSimulator("localhost", 1235)
