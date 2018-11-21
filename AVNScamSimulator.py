@@ -109,9 +109,25 @@ class ScamSimulator(DeviceServer):
         self._SCM_pmodel30 = Sensor.float("SCM.pmodel30", "Pointing model parameter 30")
         self.add_sensor(self._SCM_pmodel30)
 
-        # Target
-        self._SCM_Target = Sensor.string("SCM.Target", "Target description string in katpoint format")
-        self.add_sensor(self._SCM_Target)
+        # # Target
+        # self._SCM_Target = Sensor.string("SCM.Target", "Target description string in katpoint format")
+        # self.add_sensor(self._SCM_Target)
+
+        # RF sensor information
+        self._SCM_LcpAttenuation = Sensor.float("SCM.LcpAttenuation", "Variable attenuator setting on LCP")
+        self.add_sensor(self._SCM_LcpAttenuation)
+        self._SCM_RcpAttenuation = Sensor.float("SCM.RcpAttenuation", "Variable attenuator setting on RCP")
+        self.add_sensor(self._SCM_RcpAttenuation)
+        self._RFC_LcpFreqSel = Sensor.boolean("RCP.LcpFreqSel", "LCP Frequency Select Switch")
+        self.add_sensor(self._RFC_LcpFreqSel)
+        self._RFC_RcpFreqSel = Sensor.boolean("RCP.RcpFreqSel", "RCP Frequency Select Switch")
+        self.add_sensor(self._RFC_RcpFreqSel)
+        self._RFC_IntermediateStage_5GHz = Sensor.float("RFC.IntermediateStage_5GHz", "5 GHz Intermediate Stage LO frequency")
+        self.add_sensor(self._RFC_IntermediateStage_5GHz)
+        self._RFC_IntermediateStage_6_7GHz = Sensor.float("RFC.IntermediateStage_6_7GHz", "6.7 GHz Intermediate Stage LO frequency")
+        self.add_sensor(self._RFC_IntermediateStage_6_7GHz)
+        self._RFC_FinalStage = Sensor.float("RFC.FinalStage", "Final Stage LO frequency")
+        self.add_sensor(self._RFC_FinalStage)
 
         self.animation_thread = threading.Thread(target=self.sensor_value_thread_function)
         self.animation_thread.start()
@@ -155,9 +171,9 @@ class ScamSimulator(DeviceServer):
         self._SCM_pmodel29.set_value(random.random())
         self._SCM_pmodel30.set_value(random.random())
 
-        self._SCM_Target.set_value(my_target.description)
+        # self._SCM_Target.set_value(my_target.description)
 
-        import IPython; IPython.embed()
+        #import IPython; IPython.embed()
 
         while True:
             target_azel = my_target.azel()
@@ -167,6 +183,21 @@ class ScamSimulator(DeviceServer):
             self._SCM_desired_elev.set_value(np.trunc(10*self._SCM_request_elev.value())/10)
             self._SCM_actual_azim.set_value(self._SCM_desired_azim.value() + random.random()/25)
             self._SCM_actual_elev.set_value(self._SCM_desired_elev.value() + random.random()/25)
+
+            attenuation = float(random.randint())/2
+            self._SCM_LcpAttenuation.set_value(attenuation)
+            self._SCM_RcpAttenuation.set_value(attenuation)
+
+            freq_sel = bool(random.randint(0, 1))
+            self._RFC_LcpFreqSel.set_value(freq_sel)
+            self._RFC_RcpFreqSel.set_value(freq_sel)
+
+            # Frequency band doesn't need to be changed as frequently as the other stuff.
+            if random.random() > 0.925:
+                self._RFC_IntermediateStage_5GHz.set_value(50e6*random.random() + 1.5e9)
+                self._RFC_IntermediateStage_6_7GHz.set_value(50e6*random.random() + 3.2e9)
+                self._RFC_FinalStage.set_value(50e6*random.random() + 2.85e9)
+
 
             time.sleep(random.random()*4 + 1)
 
