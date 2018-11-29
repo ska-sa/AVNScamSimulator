@@ -197,7 +197,7 @@ class ScamSimulator(DeviceServer):
         while True:
             target_azel = my_target.azel()
             self._SCM_request_azim.set_value(np.degrees(target_azel[0]))
-            print self._SCM_request_azim
+            print dir(self._SCM_request_azim)
             self._SCM_request_elev.set_value(np.degrees(target_azel[1]))
             self._SCM_desired_azim.set_value(np.trunc(10*self._SCM_request_azim.value())/10)
             self._SCM_desired_elev.set_value(np.trunc(10*self._SCM_request_elev.value())/10)
