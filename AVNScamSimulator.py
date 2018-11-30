@@ -197,7 +197,6 @@ class ScamSimulator(DeviceServer):
         while True:
             target_azel = my_target.azel()
             self._SCM_request_azim.set_value(np.degrees(target_azel[0]))
-            print dir(self._SCM_request_azim)
             self._SCM_request_elev.set_value(np.degrees(target_azel[1]))
             self._SCM_desired_azim.set_value(np.trunc(10*self._SCM_request_azim.value())/10)
             self._SCM_desired_elev.set_value(np.trunc(10*self._SCM_request_elev.value())/10)
@@ -241,7 +240,12 @@ class ScamSimulator(DeviceServer):
                 self._EMS_AbsolutePressure.set_value(AbsolutePressure)
                 RelativeHumidity += 0.1*random.random() - 0.05
 
+            print "Sensors as at {}".format(time.time())
+            for element in iter(dir(self)):
+                if isinstance(element, katcp.core.Sensor):
+                    print "{} {} {}".format(element._timestamp, element.name, element._value)
             time.sleep(random.random()*4 + 1)
+
 
 
 if __name__ == "__main__":
