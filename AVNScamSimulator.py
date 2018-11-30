@@ -4,7 +4,7 @@ import random
 import katpoint
 import numpy as np
 from katcp import DeviceServer, Sensor, ProtocolFlags
-
+import sys
 
 class AVNTarget(katpoint.Target):
     def is_visible(self):
@@ -240,10 +240,16 @@ class ScamSimulator(DeviceServer):
                 self._EMS_AbsolutePressure.set_value(AbsolutePressure)
                 RelativeHumidity += 0.1*random.random() - 0.05
 
-            print "Sensors as at {}".format(time.time())
-            for element in iter(dir(self)):
-                if isinstance(element, katcp.core.Sensor):
+            print "\n\nSensors as at {}".format(time.time())
+            print "============================================"
+            for element_name in iter(dir(self)):
+                element = getattr(self, element_name)
+                #print "\nElement: {}".format(element)
+                #print "Type: {}".format(type(element))
+                #print "Isinstance: {}".format(isinstance(element, Sensor))
+                if isinstance(element, Sensor):
                     print "{} {} {}".format(element._timestamp, element.name, element._value)
+            sys.stdout.flush()
             time.sleep(random.random()*4 + 1)
 
 
