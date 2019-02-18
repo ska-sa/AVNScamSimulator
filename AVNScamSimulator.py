@@ -255,7 +255,7 @@ class ScamSimulator(DeviceServer):
 
 
 if __name__ == "__main__":
-    server = ScamSimulator("localhost", 1235)
+    server = ScamSimulator("", 1235)
     server.start()
 
     server.animation_thread.join()
