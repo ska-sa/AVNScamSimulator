@@ -110,8 +110,12 @@ class ScamSimulator(DeviceServer):
         self.add_sensor(self._SCM_pmodel30)
 
         # # Target
-        # self._SCM_Target = Sensor.string("SCM.Target", "Target description string in katpoint format")
-        # self.add_sensor(self._SCM_Target)
+        self._SCM_Target = Sensor.string("SCM.Target", "Target description string in katpoint format")
+        self.add_sensor(self._SCM_Target)
+
+        # Antenna activity
+        self._SCM_Antenna_Activity = Sensor.string("SCM.AntennaActivity", "Antenna activity label")
+        self.add_sensor(self._SCM_Antenna_Activity)
 
         # RF sensor information
         self._SCM_LcpAttenuation = Sensor.float("SCM.LcpAttenuation", "Variable attenuator setting on LCP")
@@ -153,8 +157,10 @@ class ScamSimulator(DeviceServer):
 
         antenna_str = "ant1, 5:45:2.48, -0:18:17.92, 116, 32.0, 0 0 0, %s" % ("0 " * 23)
         antenna = katpoint.Antenna(antenna_str)
-        my_target = AVNTarget("name1 | *name 2, radec, 12:34:56.7, -04:34:34.2, (1000.0 2000.0 1.0)",
-                              antenna=antenna)
+        target_str = "name1 | *name 2, radec, 12:34:56.7, -04:34:34.2, (1000.0 2000.0 1.0)"
+        self._SCM_Target.set_value(target_str)
+        self._SCM_Antenna_Activity.set_value("idle")
+        my_target = AVNTarget(target_str, antenna=antenna)
 
         self._SCM_pmodel1.set_value(random.random())
         self._SCM_pmodel2.set_value(random.random())
@@ -203,6 +209,19 @@ class ScamSimulator(DeviceServer):
             self._SCM_actual_azim.set_value(self._SCM_desired_azim.value() + random.random()/25)
             self._SCM_actual_elev.set_value(self._SCM_desired_elev.value() + random.random()/25)
 
+            if random.random() > 0.5:
+                coin_toss = int(4*random.random())
+                if coin_toss == 0:
+                    self._SCM_Antenna_Activity.set_value("idle")
+                elif coin_toss == 1:
+                    self._SCM_Antenna_Activity.set_value("slew")
+                elif coin_toss == 2:
+                    self._SCM_Antenna_Activity.set_value("track")
+                elif coin_toss == 3:
+                    self._SCM_Antenna_Activity.set_value("scan")
+                else:
+                    self._SCM_Antenna_Activity.set_value("stop")  # Shouldn't happen, but for logical completeness...
+
             attenuation = float(random.randint(0, 63))/2
             self._SCM_LcpAttenuation.set_value(attenuation)
             self._SCM_RcpAttenuation.set_value(attenuation)
@@ -239,6 +258,7 @@ class ScamSimulator(DeviceServer):
                 AbsolutePressure += 0.1*random.random() - 0.05
                 self._EMS_AbsolutePressure.set_value(AbsolutePressure)
                 RelativeHumidity += 0.1*random.random() - 0.05
+                self._EMS_RelativeHumidity.set_value(RelativeHumidity)
 
             print "\n\nSensors as at {}".format(time.time())
             print "============================================"
